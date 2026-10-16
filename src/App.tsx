@@ -36,8 +36,8 @@ const skills = [
 export default function App() {
   const [filter, setFilter] = useState('All')
   const [menuOpen, setMenuOpen] = useState(false)
-  useEffect(() => { try { window.localStorage.setItem('mahesh-portfolio-theme', theme) } catch { /* Theme remains available for this session. */ } }, [theme])
   const [theme, setTheme] = useState<'midnight' | 'forest' | 'ocean'>(() => { try { const saved = window.localStorage.getItem('mahesh-portfolio-theme'); return saved === 'forest' || saved === 'ocean' ? saved : 'midnight' } catch { return 'midnight' } })
+  useEffect(() => { try { window.localStorage.setItem('mahesh-portfolio-theme', theme) } catch { /* Theme remains available for this session. */ } }, [theme])
   const [projectQuery, setProjectQuery] = useState('')
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [githubEvents, setGithubEvents] = useState<GitHubEvent[]>([])
