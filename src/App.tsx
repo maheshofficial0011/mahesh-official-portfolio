@@ -130,6 +130,8 @@ export default function App() {
     { label: 'Learning Roadmap', detail: 'Track learning progress in this browser', keywords: 'roadmap learning progress java dsa', action: () => document.getElementById('learning-roadmap')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Tech Blog & Notes', detail: 'Read expandable development notes', keywords: 'blog articles notes writing', action: () => document.getElementById('tech-notes')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Project Timeline', detail: 'Explore project learning themes', keywords: 'timeline history milestones', action: () => document.getElementById('project-timeline')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Game Arcade', detail: 'Play memory, number guess, tic-tac-toe and reaction games', keywords: 'games arcade play memory reaction tic tac toe', action: () => document.getElementById('game-arcade')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Social Ecosystem', detail: 'Find social channels and contact links', keywords: 'social youtube facebook twitter instagram threads whatsapp linkedin', action: () => document.getElementById('social-hub')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'About Me', detail: 'Read my story', keywords: 'about profile', action: () => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Skills', detail: 'View tools and technologies', keywords: 'skills tech stack', action: () => document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Learning Journey', detail: 'See what I am learning', keywords: 'journey learning dsa', action: () => document.getElementById('journey')?.scrollIntoView({ behavior: 'smooth' }) },
