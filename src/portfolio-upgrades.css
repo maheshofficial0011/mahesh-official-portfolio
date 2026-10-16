@@ -72,3 +72,24 @@
 @media(max-width:700px){.upgrade-section{padding-top:70px;padding-bottom:70px}.upgrade-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.upgrade-dashboard-bottom{align-items:flex-start;flex-direction:column;padding:20px}.upgrade-dashboard-actions{width:100%}.upgrade-dashboard-actions .btn{flex:1}.upgrade-project-controls{grid-template-columns:1fr 1fr}.upgrade-project-controls label:first-child{grid-column:1/-1}.upgrade-project-grid,.upgrade-article-grid{grid-template-columns:1fr}.roadmap-grid{grid-template-columns:1fr}.roadmap-progress{grid-template-columns:1fr;gap:12px}.recruiter-panel{grid-template-columns:1fr}.recruiter-links{grid-column:auto}.upgrade-milestone-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:430px){.upgrade-stat-grid,.upgrade-milestone-grid{grid-template-columns:1fr}.upgrade-project-controls{grid-template-columns:1fr}.upgrade-project-controls label:first-child{grid-column:auto}.roadmap-card{grid-template-columns:18px 23px 1fr 18px;padding:15px;gap:8px}.upgrade-dashboard-actions{flex-direction:column}.upgrade-stat strong{font-size:26px}}
 @media(prefers-reduced-motion:reduce){.portfolio-upgrades *,.portfolio-upgrades *::before,.portfolio-upgrades *::after{animation:none!important;scroll-behavior:auto!important;transition:none!important;transform:none!important}}
+
+
+/* High-contrast recruiter controls: never inherit low-contrast quiet button styling. */
+.recruiter-panel .btn,
+.recruiter-links .btn{
+  color:#f7f5ff!important;
+  background:#242233!important;
+  border:1px solid #8f85ac!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+.recruiter-panel .btn:hover,
+.recruiter-links .btn:hover,
+.recruiter-panel .btn:focus-visible,
+.recruiter-links .btn:focus-visible{
+  color:#10110b!important;
+  background:var(--lime)!important;
+  border-color:var(--lime)!important;
+}
+.recruiter-panel .btn svg,.recruiter-links .btn svg{color:currentColor!important;flex-shrink:0}
+.recruiter-panel .btn:focus-visible,.recruiter-links .btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
