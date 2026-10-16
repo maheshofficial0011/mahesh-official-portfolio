@@ -29,6 +29,9 @@ export default function App() {
   const [timeLeft, setTimeLeft] = useState(15)
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
   const [terminalInput, setTerminalInput] = useState('')
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
+  const [commandPaletteQuery, setCommandPaletteQuery] = useState('')
+  const commandPaletteRef = useRef<HTMLInputElement>(null)
   const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([{ kind: 'output', text: 'Welcome to Mahesh.OS — a portfolio terminal, not a real system shell.' }, { kind: 'output', text: 'Type help to see the available commands.' }])
   const terminalInputRef = useRef<HTMLInputElement>(null)
   const terminalOutputRef = useRef<HTMLDivElement>(null)
@@ -38,6 +41,35 @@ export default function App() {
     const timer = window.setTimeout(() => setTimeLeft(t => t - 1), 1000)
     return () => window.clearTimeout(timer)
   }, [gameActive, timeLeft])
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        setCommandPaletteOpen(open => !open)
+      } else if (event.key === 'Escape') setCommandPaletteOpen(false)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
+  useEffect(() => {
+    if (commandPaletteOpen) window.requestAnimationFrame(() => commandPaletteRef.current?.focus())
+  }, [commandPaletteOpen])
+  const paletteActions = [
+    { label: 'Go to Home', detail: 'Navigate to the top of the page', keywords: 'home start hero', action: () => document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Explore Projects', detail: 'Browse my work and repositories', keywords: 'projects work github', action: () => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'About Me', detail: 'Read my story', keywords: 'about profile', action: () => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Skills', detail: 'View tools and technologies', keywords: 'skills tech stack', action: () => document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Learning Journey', detail: 'See what I am learning', keywords: 'journey learning dsa', action: () => document.getElementById('journey')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Open Terminal', detail: 'Try interactive portfolio commands', keywords: 'terminal command shell', action: () => document.getElementById('terminal')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Reaction Challenge', detail: 'Play the 15-second mini game', keywords: 'game challenge play reaction', action: () => document.getElementById('challenge')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Contact Me', detail: 'Find email and WhatsApp links', keywords: 'contact email whatsapp message', action: () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Theme: Midnight', detail: 'Switch to the midnight palette', keywords: 'theme dark midnight', action: () => setTheme('midnight') },
+    { label: 'Theme: Forest', detail: 'Switch to the forest palette', keywords: 'theme green forest', action: () => setTheme('forest') },
+    { label: 'Theme: Ocean', detail: 'Switch to the ocean palette', keywords: 'theme blue ocean', action: () => setTheme('ocean') },
+    { label: 'Copy email address', detail: 'maheshofficial00110@gmail.com', keywords: 'copy email clipboard', action: () => { void navigator.clipboard?.writeText('maheshofficial00110@gmail.com') } },
+  ]
+  const filteredPaletteActions = paletteActions.filter(item => (item.label + ' ' + item.detail + ' ' + item.keywords).toLowerCase().includes(commandPaletteQuery.toLowerCase().trim()))
+  const runPaletteAction = (action: () => void) => { action(); setCommandPaletteOpen(false); setCommandPaletteQuery('') }
   const startGame = () => { setGameScore(0); setTimeLeft(15); setGameActive(true) }
   const handleArtMove = (event: React.MouseEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -70,6 +102,15 @@ export default function App() {
     window.requestAnimationFrame(() => { if (terminalOutputRef.current) terminalOutputRef.current.scrollTop = terminalOutputRef.current.scrollHeight })
   }
   return <div className={`site-shell theme-${theme}`}><div className="noise" aria-hidden="true" />
+    <button type="button" className="command-palette-trigger" onClick={() => setCommandPaletteOpen(true)} aria-keyshortcuts="Control+K Meta+K"><Search size={14}/><span>Quick jump</span><kbd>Ctrl K</kbd></button>
+    {commandPaletteOpen && <div className="command-palette-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setCommandPaletteOpen(false) }}>
+      <section className="command-palette" role="dialog" aria-modal="true" aria-labelledby="command-palette-title">
+        <div className="command-palette-search"><Search size={18}/><label className="sr-only" id="command-palette-title" htmlFor="command-palette-input">Search portfolio actions</label><input id="command-palette-input" ref={commandPaletteRef} value={commandPaletteQuery} onChange={event => setCommandPaletteQuery(event.target.value)} placeholder="Search pages, themes, and actions…" autoComplete="off"/><button type="button" onClick={() => setCommandPaletteOpen(false)} aria-label="Close quick jump"><X size={17}/></button></div>
+        <p className="command-palette-caption">QUICK JUMP <span>ESC TO CLOSE</span></p>
+        <div className="command-palette-results" role="listbox" aria-label="Portfolio actions">{filteredPaletteActions.length ? filteredPaletteActions.map(item => <button type="button" role="option" aria-selected="false" className="command-palette-item" key={item.label} onClick={() => runPaletteAction(item.action)}><span className="command-palette-item-icon"><ArrowUpRight size={16}/></span><span><strong>{item.label}</strong><small>{item.detail}</small></span><kbd>↵</kbd></button>) : <p className="command-palette-empty">No matching actions. Try “projects”, “theme”, or “contact”.</p>}</div>
+        <div className="command-palette-footer"><span><kbd>Ctrl</kbd> + <kbd>K</kbd> to toggle</span><span>MAHESH.OS</span></div>
+      </section>
+    </div>}
     <header className="nav-wrap"><a className="brand" href="#home" onClick={closeMenu}><span className="brand-mark">M<span>.</span></span><span>MAHESH <em>OFFICIAL</em></span></a>
       <button className="menu-toggle" aria-label="Toggle navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
       <div className="nav-right"><div className="theme-switcher" role="group" aria-label="Choose visual theme"><button className={theme==='midnight'?'theme-option active':'theme-option'} onClick={()=>setTheme('midnight')} aria-label="Midnight theme" title="Midnight"><Moon size={14}/></button><button className={theme==='forest'?'theme-option active':'theme-option'} onClick={()=>setTheme('forest')} aria-label="Forest theme" title="Forest"><Leaf size={14}/></button><button className={theme==='ocean'?'theme-option active':'theme-option'} onClick={()=>setTheme('ocean')} aria-label="Ocean theme" title="Ocean"><Waves size={14}/></button></div><nav className={menuOpen ? 'nav-links open' : 'nav-links'}><a href="#work" onClick={closeMenu}>Work <span>↘</span></a><a href="#about" onClick={closeMenu}>About</a><a href="#skills" onClick={closeMenu}>Skills</a><a href="#journey" onClick={closeMenu}>Journey</a><a href="#terminal" onClick={closeMenu}>Terminal</a><a href="#challenge" onClick={closeMenu}>Challenge</a><a className="nav-contact" href="#contact" onClick={closeMenu}>Let's talk <ArrowUpRight size={15}/></a></nav></div>
