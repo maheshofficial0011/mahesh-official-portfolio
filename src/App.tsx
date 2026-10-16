@@ -48,21 +48,21 @@ export default function App() {
   const runTerminalCommand = (rawCommand: string) => {
     const command = rawCommand.trim()
     if (!command) return
-    const [name, ...args] = command.toLowerCase().split(/\\s+/)
+    const [name, ...args] = command.toLowerCase().split(/\s+/)
     const argument = args.join(' ')
     const output = (text: string, kind: TerminalLine['kind'] = 'output') => setTerminalLines(lines => [...lines, { kind: 'input', text: '$ ' + command }, { kind, text }].slice(-36))
     if (name === 'clear') { setTerminalLines([]); return }
     if (name === 'help') output('Commands: help · whoami · about · projects · skills · contact · theme [midnight|forest|ocean] · open <project> · clear')
     else if (name === 'whoami') output('Mahesh Official — engineering student, builder, and curious problem-solver.')
     else if (name === 'about') output('I learn by building useful things, testing edge cases, and improving what breaks. Current interests: AI/ML, full-stack development, Java DSA, and automation.')
-    else if (name === 'projects') output(projects.map(project => project.number + '  ' + project.name + ' — ' + project.category).join('\\n'))
+    else if (name === 'projects') output(projects.map(project => project.number + '  ' + project.name + ' — ' + project.category).join('\n'))
     else if (name === 'skills') output('Python · React · TypeScript · Vite · FastAPI · OpenCV · YOLOv8 · SQLite · Supabase · Java DSA')
-    else if (name === 'contact') output('Email: maheshofficial00110@gmail.com\\nGitHub: github.com/maheshofficial0011')
+    else if (name === 'contact') output('Email: maheshofficial00110@gmail.com\nGitHub: github.com/maheshofficial0011')
     else if (name === 'theme') {
       if (['midnight', 'forest', 'ocean'].includes(argument)) { setTheme(argument as 'midnight' | 'forest' | 'ocean'); output('Theme switched to ' + argument + '.') }
       else output('Usage: theme midnight | theme forest | theme ocean')
     } else if (name === 'open') {
-      const normalized = argument.replace(/\\s+/g, '-')
+      const normalized = argument.replace(/\s+/g, '-')
       const match = projects.find(project => project.name.toLowerCase() === argument || project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') === normalized)
       if (match) output(match.name + ' repository: ' + match.url)
       else output('Project not found. Try open sikshasetu, open dsa-java, open skillsaathi, or run projects.', 'error')
