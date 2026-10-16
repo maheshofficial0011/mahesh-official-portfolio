@@ -113,3 +113,10 @@
 .high-contrast :focus-visible{outline:3px solid #fff!important;outline-offset:3px}
 @media(max-width:850px){.upgrade-timeline{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.upgrade-timeline *,.contrast-toggle{transition:none!important}}
+
+
+/* Featured-only project filter */
+.featured-only-control{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:-4px 0 18px;color:#e0ddeb;font-size:11px}
+.featured-only-control input{width:16px;height:16px;accent-color:var(--lime)}
+.featured-only-control span{color:#a09bad;font-size:10px}
+.high-contrast .featured-only-control,.high-contrast .featured-only-control span{color:#fff!important}
