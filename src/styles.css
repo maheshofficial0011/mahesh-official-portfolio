@@ -101,3 +101,11 @@ html{scroll-padding-top:100px}
 @media(max-width:850px){.terminal-section{grid-template-columns:1fr;gap:30px}.terminal-intro>p{max-width:560px}.terminal-window{transform:none}.terminal-window:hover,.terminal-window:focus-within{transform:translateY(-2px)}}
 @media(max-width:560px){.terminal-section{padding-top:78px;padding-bottom:78px}.terminal-intro h2{font-size:43px}.terminal-screen{height:260px;padding:17px 14px 12px}.terminal-titlebar{padding:0 11px}.terminal-command{margin:0 11px}.terminal-help{padding-left:12px;padding-right:12px;font-size:8px}.terminal-banner{font-size:22px}}
 @media(prefers-reduced-motion:reduce){.terminal-window,.terminal-window:hover,.terminal-window:focus-within,.terminal-command button{transition:none!important;transform:none!important}}
+
+
+/* Functional terminal shortcuts and searchable-project empty state */
+.terminal-hint>button{padding:7px 9px;border:1px solid var(--line);border-radius:5px;background:color-mix(in srgb,var(--panel) 78%,transparent);color:var(--lime);font:10px var(--mono);cursor:pointer;transition:border-color .2s,background .2s,transform .2s}
+.terminal-hint>button:hover{border-color:color-mix(in srgb,var(--lime) 45%,var(--line));background:color-mix(in srgb,var(--lime) 10%,var(--panel));transform:translateY(-1px)}
+.terminal-hint>button:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+.no-project-results{grid-column:1/-1}
+@media(prefers-reduced-motion:reduce){.terminal-hint>button{transition:none!important}}
