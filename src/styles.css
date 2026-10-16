@@ -253,3 +253,12 @@ body{overflow-wrap:break-word}
 @media(max-width:560px){.project-grid,.skills-grid{grid-template-columns:minmax(0,1fr)}.section-heading{align-items:flex-start;flex-direction:column}.section-heading>p br{display:none}.hero h1{font-size:clamp(42px,12vw,68px)}.hero-actions,.contact-actions{flex-wrap:wrap}.hero-actions .btn,.contact-actions .btn{max-width:100%}.github-profile-copy{min-width:0;flex:1}.github-profile-stats{width:100%}.github-activity-footer{gap:10px}.terminal-window,.game-panel{min-width:0}.terminal-screen{overflow-x:auto}.terminal-line pre{white-space:pre-wrap;overflow-wrap:anywhere}.contact-form{padding:16px}.contact-form-grid input,.contact-form-grid textarea{min-width:0;width:100%}.whatsapp-contact-card{gap:10px}.whatsapp-card-copy{min-width:0}.footer .socials{margin-left:auto}}
 @media(max-width:380px){.brand{gap:7px}.brand>span:last-child{font-size:11px}.theme-switcher{gap:2px}.theme-option{padding:6px}.hero h1{font-size:clamp(38px,11vw,48px)}.shortcut-guide>span:last-child kbd{font-size:8px}.github-profile-stats{flex-wrap:wrap}.game-controls .btn{width:100%;justify-content:center}}
 @media(hover:none){.project-card:hover,.skill-card:hover,.github-activity-item:hover{transform:none}.nav-links a,.btn,.theme-option{min-height:42px}}
+
+
+/* Prevent Quick Jump and Back to Top from occupying the same fixed position. */
+.command-palette-trigger{right:22px!important;bottom:86px!important;z-index:31!important}
+.back-to-top{right:22px!important;bottom:20px!important;z-index:30!important}
+@media(max-width:560px){
+  .command-palette-trigger{right:12px!important;bottom:76px!important}
+  .back-to-top{right:12px!important;bottom:12px!important}
+}
