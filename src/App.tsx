@@ -150,23 +150,82 @@ export default function App() {
     if (!command) return
     const [name, ...args] = command.toLowerCase().split(/\s+/)
     const argument = args.join(' ')
-    const output = (text: string, kind: TerminalLine['kind'] = 'output') => setTerminalLines(lines => [...lines, { kind: 'input' as const, text: '$ ' + command }, { kind, text }].slice(-36))
+    const output = (text: string, kind: TerminalLine['kind'] = 'output') => setTerminalLines(lines => [...lines, { kind: 'input' as const, text: '$ ' + command }, { kind, text }].slice(-50))
+    const projectList = () => projects.map(project => project.number + '  ' + project.name + ' — ' + project.category + ' [' + project.status + ']').join('\n')
     if (name === 'clear') { setTerminalLines([]); return }
-    if (name === 'help') output('Commands: help · whoami · about · projects · skills · contact · theme [midnight|forest|ocean] · open <project> · clear')
-    else if (name === 'whoami') output('Mahesh Official — engineering student, builder, and curious problem-solver.')
+    if (name === 'help') output('PORTFOLIO COMMANDS\nhelp [command] · whoami · about · date · uptime · banner\nprojects [filter] · skills · learn · stats · status\nopen <project> · repo <project> · github · contact · copy-email\ntheme <midnight|forest|ocean> · theme list · theme reset\nquote · joke · matrix · calc <basic expression> · ping\nhistory · echo <text> · man <command> · clear\nSafe simulation: no system commands are executed.')
+    else if (name === 'whoami') output('Mahesh Official — engineering student, builder, and curious problem-solver.\nMode: portfolio sandbox | Permissions: read-only demo')
     else if (name === 'about') output('I learn by building useful things, testing edge cases, and improving what breaks. Current interests: AI/ML, full-stack development, Java DSA, and automation.')
-    else if (name === 'projects') output(projects.map(project => project.number + '  ' + project.name + ' — ' + project.category).join('\n'))
-    else if (name === 'skills') output('Python · React · TypeScript · Vite · FastAPI · OpenCV · YOLOv8 · SQLite · Supabase · Java DSA')
-    else if (name === 'contact') output('Email: maheshofficial00110@gmail.com\nGitHub: github.com/maheshofficial0011')
+    else if (name === 'date') output('Local browser time: ' + new Date().toLocaleString() + '\nThis value comes from your device clock.')
+    else if (name === 'uptime') output('Portfolio session active.\nThis is a playful session readout, not a server uptime measurement.')
+    else if (name === 'banner') output('███╗   ███╗ █████╗ ██╗  ██╗███████╗███████╗\n████╗ ████║██╔══██╗██║  ██║██╔════╝██╔════╝\n██╔████╔██║███████║███████║█████╗  █████╗\n██║╚██╔╝██║██╔══██║██╔══██║██╔══╝  ██╔══╝\nPortfolio terminal • Learn. Build. Improve.')
+    else if (name === 'projects') {
+      const matches = argument ? projects.filter(project => (project.name + ' ' + project.category + ' ' + project.status + ' ' + project.stack.join(' ')).toLowerCase().includes(argument)) : projects
+      output(matches.length ? matches.map(project => project.number + '  ' + project.name + ' — ' + project.category + '\n    Status: ' + project.status + '\n    Stack: ' + project.stack.join(', ')).join('\n') : 'No projects match "' + argument + '". Try projects, projects ai, or projects full stack.')
+    }
+    else if (name === 'skills') output('TECH TOOLKIT\nPython · React · TypeScript · Vite · FastAPI\nOpenCV · YOLOv8 · SQLite · Supabase · Java DSA\nSkill levels are intentionally not scored here; this list reflects tools explored in projects.')
+    else if (name === 'learn') output('CURRENT LEARNING TRACKS\n01  Java data structures & algorithms\n02  AI/ML and computer vision\n03  Full-stack application engineering\n04  Cybersecurity fundamentals\n05  AI automation and practical workflows')
+    else if (name === 'stats') output('PORTFOLIO SNAPSHOT\nProjects listed: ' + projects.length + '\nTheme: ' + theme + '\nTerminal history: ' + Math.floor(terminalLines.length / 2) + ' prior command(s)\nFor live repository stats, visit github.')
+    else if (name === 'status') output('SYSTEM STATUS\nPortfolio UI: ready\nTerminal: simulated sandbox\nExternal shell access: disabled\nLive GitHub data: available in the GitHub Activity section when the API responds.')
+    else if (name === 'contact') output('Email: maheshofficial00110@gmail.com\nGitHub: github.com/maheshofficial0011\nLinkedIn: search for Mahesh (Manav) Rana from the portfolio footer.')
+    else if (name === 'github') { output('Opening the public GitHub profile in a new tab.'); window.open('https://github.com/maheshofficial0011', '_blank', 'noopener,noreferrer') }
+    else if (name === 'copy-email') {
+      if (navigator.clipboard?.writeText) { void navigator.clipboard.writeText('maheshofficial00110@gmail.com').then(() => output('Email copied to clipboard.')).catch(() => output('Clipboard permission unavailable. Email: maheshofficial00110@gmail.com', 'error')) }
+      else output('Clipboard is not supported here. Email: maheshofficial00110@gmail.com')
+    }
     else if (name === 'theme') {
-      if (['midnight', 'forest', 'ocean'].includes(argument)) { setTheme(argument as 'midnight' | 'forest' | 'ocean'); output('Theme switched to ' + argument + '.') }
-      else output('Usage: theme midnight | theme forest | theme ocean')
-    } else if (name === 'open') {
-      const normalized = argument.replace(/\s+/g, '-')
-      const match = projects.find(project => project.name.toLowerCase() === argument || project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') === normalized)
-      if (match) { window.open(match.url, '_blank', 'noopener,noreferrer'); output('Opening ' + match.name + ' repository in a new tab: ' + match.url) }
-      else output('Project not found. Try open sikshasetu, open dsa-java, open skillsaathi, or run projects.', 'error')
-    } else output('Unknown command: ' + name + '. Type help to see available commands.', 'error')
+      if (argument === 'list') output('Available themes: midnight, forest, ocean')
+      else if (argument === 'reset') { setTheme('midnight'); output('Theme reset to midnight.') }
+      else if (['midnight', 'forest', 'ocean'].includes(argument)) { setTheme(argument as 'midnight' | 'forest' | 'ocean'); output('Theme switched to ' + argument + '.') }
+      else output('Usage: theme list | theme midnight | theme forest | theme ocean | theme reset')
+    }
+    else if (name === 'open' || name === 'repo') {
+      const match = projects.find(project => project.name.toLowerCase() === argument || project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') === argument.replace(/\s+/g, '-') || project.name.toLowerCase().includes(argument))
+      if (match) { output('Opening ' + match.name + ' repository in a new tab: ' + match.url); window.open(match.url, '_blank', 'noopener,noreferrer') }
+      else output('Project not found. Try projects to see names, then open sikshasetu or repo dsa-java.', 'error')
+    }
+    else if (name === 'quote') {
+      const quotes = ['Small steps, consistently repeated, become serious progress.', 'Build to learn; refine to make it useful.', 'Curiosity is a feature, not a bug.', 'A good debugging session starts with a better question.']
+      output('“' + quotes[Math.floor(Math.random() * quotes.length)] + '”')
+    }
+    else if (name === 'joke') {
+      const jokes = ['Why did the developer go broke? Too many cache misses.', 'A SQL query walks into a bar, asks two tables to join.', 'Debugging: being the detective and the suspect at the same time.', 'There are 10 types of people: those who understand binary and those who do not.']
+      output(jokes[Math.floor(Math.random() * jokes.length)])
+    }
+    else if (name === 'matrix') output('01001000 01100101 01101100 01101100 01101111\n01000011 01110101 01110010 01101001 01101111 01110011 01101001 01110100 01111001\nSimulation complete. No hidden processes were started.')
+    else if (name === 'ping') output('portfolio.local → response simulated\nStatus: OK · Network latency: not measured\nThis demo does not send network packets.')
+    else if (name === 'echo') output(argument || 'Usage: echo <text>')
+    else if (name === 'history') output(terminalLines.filter(line => line.kind === 'input').map(line => line.text).join('\n') || 'No previous commands in this session.')
+    else if (name === 'calc') {
+      const expression = args.join('').replace(/\s+/g, '')
+      if (!expression || !/^[\d.+\-*/()%]+$/.test(expression) || !/[+*/%\-]/.test(expression)) output('Usage: calc 12*(3+4) — numbers and basic arithmetic only.', 'error')
+      else {
+        try {
+          const tokens = expression.match(/\d+(?:\.\d+)?|[()+\-*/%]/g) || []
+          if (tokens.join('') !== expression) throw new Error('Invalid characters')
+          let index = 0
+          const parseFactor = (): number => {
+            const token = tokens[index++]
+            if (token === '+') return parseFactor()
+            if (token === '-') return -parseFactor()
+            if (token === '(') { const value = parseExpression(); if (tokens[index++] !== ')') throw new Error('Missing closing parenthesis'); return value }
+            const value = Number(token)
+            if (!Number.isFinite(value)) throw new Error('Invalid number')
+            return value
+          }
+          const parseTerm = (): number => { let value = parseFactor(); while (['*','/','%'].includes(tokens[index])) { const op = tokens[index++]; const right = parseFactor(); if ((op === '/' || op === '%') && right === 0) throw new Error('Division by zero'); value = op === '*' ? value * right : op === '/' ? value / right : value % right } return value }
+          const parseExpression = (): number => { let value = parseTerm(); while (tokens[index] === '+' || tokens[index] === '-') { const op = tokens[index++]; const right = parseTerm(); value = op === '+' ? value + right : value - right } return value }
+          const result = parseExpression()
+          if (index !== tokens.length || !Number.isFinite(result)) throw new Error('Invalid expression')
+          output(expression + ' = ' + result)
+        } catch { output('Could not parse that expression. Try calc 12*(3+4).', 'error') }
+      }
+    }
+    else if (name === 'man') {
+      const manuals: Record<string,string> = {help:'Lists available sandbox commands.',projects:'Lists projects; add a filter like projects ai.',theme:'Changes the portfolio color theme.',calc:'Evaluates basic arithmetic only; no code execution.',open:'Opens a matching public project repository.',clear:'Clears visible terminal output.'}
+      output(manuals[argument] || 'Manual topics: help, projects, theme, calc, open, clear. Try man calc.')
+    }
+    else output('Unknown command: ' + name + '. Type help to see available commands.', 'error')
     window.requestAnimationFrame(() => { if (terminalOutputRef.current) terminalOutputRef.current.scrollTop = terminalOutputRef.current.scrollHeight })
   }
   return <div className={`site-shell theme-${theme}`}><div className="noise" aria-hidden="true" />
