@@ -5,8 +5,12 @@ Creative, responsive portfolio for Mahesh Official, built with React, TypeScript
 ## Features
 - Responsive layout and mobile navigation
 - Animated hero artwork and subtle motion
-- Filterable project cards with project status labels
-- About, skills, learning process, and contact sections
+- Searchable and filterable project cards with technology-aware search
+- Project status labels that distinguish active builds from learning work
+- About, skills, learning process, WhatsApp, email, and contact-form sections
+- Responsive contact form routed through FormSubmit (first-use email activation may be required)
+- SEO description, canonical URL, and social-sharing metadata
+- Back-to-top shortcut and no-results state for project search
 - Reduced-motion accessibility support
 - GitHub Pages deployment workflow
 
@@ -45,7 +49,6 @@ Project status badges communicate current development/learning status and should
 
 ## Before publishing
 
-- Replace the placeholder `hello@maheshofficial.dev` email with an address you control, or remove the email links.
-- Replace the generic LinkedIn link with your real profile URL if you have one.
+- Confirm the FormSubmit activation email before expecting contact-form submissions.
 - Verify every project's latest status and links.
 - Google Fonts are loaded remotely; local fallback fonts are provided.
