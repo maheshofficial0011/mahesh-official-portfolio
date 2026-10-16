@@ -203,3 +203,27 @@ html{scroll-padding-top:100px}
 @media(max-width:760px){.github-profile-strip{flex-wrap:wrap}.github-profile-copy{min-width:calc(100% - 70px)}.github-profile-stats{order:3;flex:1;justify-content:space-around;padding-top:8px;border-top:1px solid var(--line)}.github-profile-link{margin-left:auto}.github-activity-list{grid-template-columns:1fr}}
 @media(max-width:430px){.github-profile-strip{gap:11px;padding:13px}.github-profile-stats{gap:12px}.github-profile-stats strong{font-size:15px}.github-event-heading{flex-direction:column;gap:4px}.github-activity-footer{align-items:flex-start;flex-direction:column}}
 @media(prefers-reduced-motion:reduce){.github-loading-dot{animation:none}.github-activity-item{transition:none}.github-activity-item:hover{transform:none}}
+
+
+/* Hidden-lab Easter egg modal */
+.easter-egg-backdrop{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(3,6,9,.78);backdrop-filter:blur(11px);overflow-y:auto}
+.easter-egg-modal{width:min(100%,490px);overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:0 28px 110px #0009;animation:palette-in .2s ease-out}
+.easter-egg-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line)}
+.easter-egg-top>span{display:flex;align-items:center;gap:8px;color:var(--lime);font:9px var(--mono);letter-spacing:.1em}
+.easter-egg-top button{display:grid;place-items:center;width:32px;height:32px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--text);cursor:pointer}
+.easter-egg-top button:hover{border-color:var(--lime)}
+.easter-egg-art{position:relative;display:grid;place-items:center;min-height:170px;overflow:hidden;border-bottom:1px solid var(--line);background:radial-gradient(ellipse at center,color-mix(in srgb,var(--lime) 13%,transparent),transparent 66%)}
+.easter-egg-orbit{position:absolute;width:132px;height:132px;border:1px solid color-mix(in srgb,var(--lime) 32%,transparent);border-radius:50%;animation:egg-orbit 12s linear infinite}
+.easter-egg-orbit.orbit-two{width:180px;height:180px;border-color:color-mix(in srgb,var(--line) 75%,transparent);animation-duration:18s;animation-direction:reverse}
+.easter-egg-star{display:grid;place-items:center;width:76px;height:76px;border:1px solid color-mix(in srgb,var(--lime) 50%,var(--line));border-radius:22px;background:color-mix(in srgb,var(--panel) 78%,transparent);color:var(--lime);box-shadow:0 0 45px color-mix(in srgb,var(--lime) 14%,transparent);transform:rotate(-8deg)}
+.easter-egg-coordinate{position:absolute;right:16px;bottom:13px;color:var(--muted);font:9px var(--mono);letter-spacing:.12em}
+.easter-egg-copy{padding:24px}
+.easter-egg-copy h2{margin:12px 0;font-size:clamp(26px,6vw,36px);letter-spacing:-.045em}
+.easter-egg-copy>p:not(.easter-egg-hint){color:var(--muted);font-size:12px;line-height:1.8}
+.easter-egg-badge{display:flex;align-items:center;gap:8px;margin:20px 0;padding:11px 12px;border:1px solid var(--line);border-radius:8px;color:var(--lime);font:9px var(--mono);letter-spacing:.1em}
+.easter-egg-badge span:nth-child(2){flex:1}
+.easter-egg-hint{margin:17px 0 0;color:var(--muted);font-size:10px;line-height:1.8}
+.easter-egg-hint kbd{padding:2px 5px;border:1px solid var(--line);border-radius:4px;color:var(--text);font:10px var(--mono)}
+@keyframes egg-orbit{to{transform:rotate(360deg)}}
+@media(max-width:480px){.easter-egg-backdrop{padding:10px}.easter-egg-copy{padding:18px}.easter-egg-art{min-height:145px}}
+@media(prefers-reduced-motion:reduce){.easter-egg-modal,.easter-egg-orbit{animation:none!important}}
