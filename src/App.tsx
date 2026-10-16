@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowDownRight, ArrowUpRight, Code2, Cpu, Github, Mail, Menu, MessageCircle, Search, ArrowUp, Moon, Leaf, Waves, Linkedin, Sparkles, Terminal, X, Layers3, Braces, ShieldCheck, GraduationCap, Gamepad2, Target, Trophy, Send, RotateCcw } from 'lucide-react'
+import PortfolioUpgrades from './PortfolioUpgrades'
 
 type Project = { name: string; category: string; status: 'In progress' | 'Building' | 'Learning'; number: string; description: string; stack: string[]; url: string; color: string; icon: typeof Cpu }
 const projects: Project[] = [
@@ -35,7 +36,8 @@ const skills = [
 export default function App() {
   const [filter, setFilter] = useState('All')
   const [menuOpen, setMenuOpen] = useState(false)
-  const [theme, setTheme] = useState<'midnight' | 'forest' | 'ocean'>('midnight')
+  useEffect(() => { try { window.localStorage.setItem('mahesh-portfolio-theme', theme) } catch { /* Theme remains available for this session. */ } }, [theme])
+  const [theme, setTheme] = useState<'midnight' | 'forest' | 'ocean'>(() => { try { const saved = window.localStorage.getItem('mahesh-portfolio-theme'); return saved === 'forest' || saved === 'ocean' ? saved : 'midnight' } catch { return 'midnight' } })
   const [projectQuery, setProjectQuery] = useState('')
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [githubEvents, setGithubEvents] = useState<GitHubEvent[]>([])
@@ -123,6 +125,10 @@ export default function App() {
   const paletteActions = [
     { label: 'Go to Home', detail: 'Navigate to the top of the page', keywords: 'home start hero', action: () => document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Explore Projects', detail: 'Browse my work and repositories', keywords: 'projects work github', action: () => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Developer Dashboard', detail: 'Project and learning overview', keywords: 'dashboard overview stats', action: () => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Project Explorer', detail: 'Search, filter, and sort projects', keywords: 'explorer filter sort project', action: () => document.getElementById('project-explorer')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Learning Roadmap', detail: 'Track learning progress in this browser', keywords: 'roadmap learning progress java dsa', action: () => document.getElementById('learning-roadmap')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Tech Blog & Notes', detail: 'Read expandable development notes', keywords: 'blog articles notes writing', action: () => document.getElementById('tech-notes')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'About Me', detail: 'Read my story', keywords: 'about profile', action: () => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Skills', detail: 'View tools and technologies', keywords: 'skills tech stack', action: () => document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Learning Journey', detail: 'See what I am learning', keywords: 'journey learning dsa', action: () => document.getElementById('journey')?.scrollIntoView({ behavior: 'smooth' }) },
@@ -256,7 +262,7 @@ export default function App() {
     </div>}
     <header className="nav-wrap"><a className="brand" href="#home" onClick={event => { event.preventDefault(); closeMenu(); setLogoClicks(count => { const next = count + 1; if (next >= 5) { setEasterEggOpen(true); setSecretMessage('Five clicks. One developer instinct. Welcome to the hidden lab.'); return 0 } return next }); document.getElementById('home')?.scrollIntoView({behavior:'smooth'}) }} aria-label="Mahesh Official home"><span className="brand-mark">M<span>.</span></span><span>MAHESH <em>OFFICIAL</em></span></a>
       <button className="menu-toggle" aria-label="Toggle navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
-      <div className="nav-right"><div className="theme-switcher" role="group" aria-label="Choose visual theme"><button className={theme==='midnight'?'theme-option active':'theme-option'} onClick={()=>setTheme('midnight')} aria-label="Midnight theme" title="Midnight"><Moon size={14}/></button><button className={theme==='forest'?'theme-option active':'theme-option'} onClick={()=>setTheme('forest')} aria-label="Forest theme" title="Forest"><Leaf size={14}/></button><button className={theme==='ocean'?'theme-option active':'theme-option'} onClick={()=>setTheme('ocean')} aria-label="Ocean theme" title="Ocean"><Waves size={14}/></button></div><nav className={menuOpen ? 'nav-links open' : 'nav-links'}><a href="#work" onClick={closeMenu}>Work <span>↘</span></a><a href="#about" onClick={closeMenu}>About</a><a href="#skills" onClick={closeMenu}>Skills</a><a href="#journey" onClick={closeMenu}>Journey</a><a href="#github-activity" onClick={closeMenu}>GitHub</a><a href="#terminal" onClick={closeMenu}>Terminal</a><a href="#challenge" onClick={closeMenu}>Challenge</a><button type="button" className="nav-shortcuts" onClick={() => { closeMenu(); setCommandPaletteOpen(true); setCommandPaletteQuery('') }} aria-label="Open keyboard shortcuts and quick jump"><kbd>Ctrl</kbd><span>+</span><kbd>K</kbd><span className="nav-shortcuts-label">Shortcuts</span></button><a className="nav-contact" href="#contact" onClick={closeMenu}>Let's talk <ArrowUpRight size={15}/></a></nav></div>
+      <div className="nav-right"><div className="theme-switcher" role="group" aria-label="Choose visual theme"><button className={theme==='midnight'?'theme-option active':'theme-option'} onClick={()=>setTheme('midnight')} aria-label="Midnight theme" title="Midnight"><Moon size={14}/></button><button className={theme==='forest'?'theme-option active':'theme-option'} onClick={()=>setTheme('forest')} aria-label="Forest theme" title="Forest"><Leaf size={14}/></button><button className={theme==='ocean'?'theme-option active':'theme-option'} onClick={()=>setTheme('ocean')} aria-label="Ocean theme" title="Ocean"><Waves size={14}/></button></div><nav className={menuOpen ? 'nav-links open' : 'nav-links'}><a href="#work" onClick={closeMenu}>Work <span>↘</span></a><a href="#about" onClick={closeMenu}>About</a><a href="#skills" onClick={closeMenu}>Skills</a><a href="#dashboard" onClick={closeMenu}>Dashboard</a><a href="#learning-roadmap" onClick={closeMenu}>Roadmap</a><a href="#tech-notes" onClick={closeMenu}>Notes</a><a href="#journey" onClick={closeMenu}>Journey</a><a href="#github-activity" onClick={closeMenu}>GitHub</a><a href="#terminal" onClick={closeMenu}>Terminal</a><a href="#challenge" onClick={closeMenu}>Challenge</a><button type="button" className="nav-shortcuts" onClick={() => { closeMenu(); setCommandPaletteOpen(true); setCommandPaletteQuery('') }} aria-label="Open keyboard shortcuts and quick jump"><kbd>Ctrl</kbd><span>+</span><kbd>K</kbd><span className="nav-shortcuts-label">Shortcuts</span></button><a className="nav-contact" href="#contact" onClick={closeMenu}>Let's talk <ArrowUpRight size={15}/></a></nav></div>
     </header>
     <main>
       <section className="hero section-pad" id="home">
@@ -300,6 +306,7 @@ export default function App() {
         <p className="github-activity-disclaimer">GitHub’s public events feed may be delayed and only includes recent public activity. It does not represent private contributions or a complete lifetime contribution count. <a href="https://docs.github.com/en/rest/activity/events" target="_blank" rel="noreferrer">API details <ArrowUpRight size={11}/></a></p>
       </section>
 
+      <PortfolioUpgrades />
       <section className="terminal-section section-pad" id="terminal" aria-labelledby="terminal-title">
         <div className="terminal-intro"><span className="section-kicker">05 / INTERACTIVE SYSTEM</span><h2 id="terminal-title">Meet me at the<br/><span className="serif-italic">command line.</span></h2><p>Explore my work through a little terminal. These commands are a safe, simulated interface — they do not execute system commands.</p><div className="terminal-hint"><span>TRY</span><button type="button" onClick={() => { setTerminalInput("help"); terminalInputRef.current?.focus() }}>help</button><button type="button" onClick={() => { setTerminalInput("projects"); terminalInputRef.current?.focus() }}>projects</button><button type="button" onClick={() => runTerminalCommand("theme ocean")}>theme ocean</button><button type="button" onClick={() => runTerminalCommand("stats")}>stats</button><button type="button" onClick={() => runTerminalCommand("calc 12*(3+4)")}>calc demo</button><button type="button" onClick={() => runTerminalCommand("quote")}>quote</button></div></div>
         <div className="terminal-window" onClick={() => terminalInputRef.current?.focus()}>
