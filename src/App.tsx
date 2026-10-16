@@ -50,10 +50,31 @@ export default function App() {
   const [terminalInput, setTerminalInput] = useState('')
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
   const [commandPaletteQuery, setCommandPaletteQuery] = useState('')
+  const [easterEggOpen, setEasterEggOpen] = useState(false)
+  const [konamiFound, setKonamiFound] = useState(false)
+  const [logoClicks, setLogoClicks] = useState(0)
+  const [secretMessage, setSecretMessage] = useState('')
   const commandPaletteRef = useRef<HTMLInputElement>(null)
   const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([{ kind: 'output', text: 'Welcome to Mahesh.OS — a portfolio terminal, not a real system shell.' }, { kind: 'output', text: 'Type help to see the available commands.' }])
   const terminalInputRef = useRef<HTMLInputElement>(null)
   const terminalOutputRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const sequence = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a']
+    let position = 0
+    const handleSecretKeys = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey || event.altKey) return
+      const target = event.target as HTMLElement | null
+      if (target && (target.isContentEditable || ['INPUT','TEXTAREA','SELECT'].includes(target.tagName))) return
+      const key = event.key.length === 1 ? event.key.toLowerCase() : event.key
+      if (key === sequence[position]) {
+        position += 1
+        if (position === sequence.length) { setKonamiFound(true); setEasterEggOpen(true); setSecretMessage('Secret sequence unlocked. Keep building, one curious experiment at a time.'); position = 0 }
+      } else position = key === sequence[0] ? 1 : 0
+      if (key === '?') { setEasterEggOpen(true); setSecretMessage('Shortcut discovered: Ctrl + K opens the quick-jump palette.') }
+    }
+    window.addEventListener('keydown', handleSecretKeys)
+    return () => window.removeEventListener('keydown', handleSecretKeys)
+  }, [])
   useEffect(() => {
     const controller = new AbortController()
     const loadGitHubActivity = async () => {
@@ -113,6 +134,7 @@ export default function App() {
     { label: 'Theme: Forest', detail: 'Switch to the forest palette', keywords: 'theme green forest', action: () => setTheme('forest') },
     { label: 'Theme: Ocean', detail: 'Switch to the ocean palette', keywords: 'theme blue ocean', action: () => setTheme('ocean') },
     { label: 'Copy email address', detail: 'maheshofficial00110@gmail.com', keywords: 'copy email clipboard', action: () => { void navigator.clipboard?.writeText('maheshofficial00110@gmail.com') } },
+    { label: 'Open hidden lab', detail: 'A small portfolio Easter egg', keywords: 'secret hidden easter egg surprise lab', action: () => { setEasterEggOpen(true); setSecretMessage('You found the hidden lab from the quick-jump menu. Explore freely.'); } },
   ]
   const filteredPaletteActions = paletteActions.filter(item => (item.label + ' ' + item.detail + ' ' + item.keywords).toLowerCase().includes(commandPaletteQuery.toLowerCase().trim()))
   const runPaletteAction = (action: () => void) => { action(); setCommandPaletteOpen(false); setCommandPaletteQuery('') }
@@ -149,6 +171,13 @@ export default function App() {
   }
   return <div className={`site-shell theme-${theme}`}><div className="noise" aria-hidden="true" />
     <button type="button" className="command-palette-trigger" onClick={() => setCommandPaletteOpen(true)} aria-keyshortcuts="Control+K Meta+K"><Search size={14}/><span>Quick jump</span><kbd>Ctrl K</kbd></button>
+    {easterEggOpen && <div className="easter-egg-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setEasterEggOpen(false) }}>
+      <section className="easter-egg-modal" role="dialog" aria-modal="true" aria-labelledby="easter-egg-title">
+        <div className="easter-egg-top"><span><Sparkles size={15}/> MAHESH.LAB / SECRET FOUND</span><button type="button" onClick={() => setEasterEggOpen(false)} aria-label="Close secret panel"><X size={18}/></button></div>
+        <div className="easter-egg-art"><div className="easter-egg-orbit orbit-one"/><div className="easter-egg-orbit orbit-two"/><div className="easter-egg-star"><Sparkles size={36}/></div><span className="easter-egg-coordinate">CURIOSITY.EXE</span></div>
+        <div className="easter-egg-copy"><span className="section-kicker">{konamiFound ? 'SEQUENCE ACCEPTED' : 'A LITTLE EXTRA'}</span><h2 id="easter-egg-title">You found the <span className="serif-italic">hidden layer.</span></h2><p>{secretMessage || 'Good things happen when you explore. This portfolio was built with curiosity, experimentation, and a lot of small iterations.'}</p><div className="easter-egg-badge"><Sparkles size={15}/><span>{konamiFound ? 'CURIOSITY UNLOCKED' : 'EXPLORER MODE'}</span><span>✳</span></div><button className="btn btn-primary" type="button" onClick={() => { setEasterEggOpen(false); document.getElementById('terminal')?.scrollIntoView({behavior:'smooth'}) }}>Explore the terminal <ArrowUpRight size={15}/></button><p className="easter-egg-hint">Hint: click the M. logo five times, press <kbd>?</kbd>, or try the classic arrow-key sequence.</p></div>
+      </section>
+    </div>}
     {selectedProject && <div className="project-modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setSelectedProject(null) }}>
       <section className="project-modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
         <div className="project-modal-top"><span className="section-kicker">PROJECT / {selectedProject.number}</span><button type="button" onClick={() => setSelectedProject(null)} aria-label="Close project details"><X size={19}/></button></div>
@@ -164,7 +193,7 @@ export default function App() {
         <div className="command-palette-footer"><span><kbd>Ctrl</kbd> + <kbd>K</kbd> to toggle</span><span>MAHESH.OS</span></div>
       </section>
     </div>}
-    <header className="nav-wrap"><a className="brand" href="#home" onClick={closeMenu}><span className="brand-mark">M<span>.</span></span><span>MAHESH <em>OFFICIAL</em></span></a>
+    <header className="nav-wrap"><a className="brand" href="#home" onClick={event => { event.preventDefault(); closeMenu(); setLogoClicks(count => { const next = count + 1; if (next >= 5) { setEasterEggOpen(true); setSecretMessage('Five clicks. One developer instinct. Welcome to the hidden lab.'); return 0 } return next }); document.getElementById('home')?.scrollIntoView({behavior:'smooth'}) }} aria-label="Mahesh Official home"><span className="brand-mark">M<span>.</span></span><span>MAHESH <em>OFFICIAL</em></span></a>
       <button className="menu-toggle" aria-label="Toggle navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
       <div className="nav-right"><div className="theme-switcher" role="group" aria-label="Choose visual theme"><button className={theme==='midnight'?'theme-option active':'theme-option'} onClick={()=>setTheme('midnight')} aria-label="Midnight theme" title="Midnight"><Moon size={14}/></button><button className={theme==='forest'?'theme-option active':'theme-option'} onClick={()=>setTheme('forest')} aria-label="Forest theme" title="Forest"><Leaf size={14}/></button><button className={theme==='ocean'?'theme-option active':'theme-option'} onClick={()=>setTheme('ocean')} aria-label="Ocean theme" title="Ocean"><Waves size={14}/></button></div><nav className={menuOpen ? 'nav-links open' : 'nav-links'}><a href="#work" onClick={closeMenu}>Work <span>↘</span></a><a href="#about" onClick={closeMenu}>About</a><a href="#skills" onClick={closeMenu}>Skills</a><a href="#journey" onClick={closeMenu}>Journey</a><a href="#github-activity" onClick={closeMenu}>GitHub</a><a href="#terminal" onClick={closeMenu}>Terminal</a><a href="#challenge" onClick={closeMenu}>Challenge</a><a className="nav-contact" href="#contact" onClick={closeMenu}>Let's talk <ArrowUpRight size={15}/></a></nav></div>
     </header>
