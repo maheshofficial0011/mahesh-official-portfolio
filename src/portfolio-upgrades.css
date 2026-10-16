@@ -93,3 +93,23 @@
 }
 .recruiter-panel .btn svg,.recruiter-links .btn svg{color:currentColor!important;flex-shrink:0}
 .recruiter-panel .btn:focus-visible,.recruiter-links .btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+
+/* Project timeline */
+.upgrade-timeline{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.upgrade-timeline article{display:grid;grid-template-columns:35px 1fr;gap:13px;align-items:start;padding:22px;border:1px solid var(--line);border-radius:8px;background:var(--upgrade-panel);min-width:0}
+.upgrade-timeline-marker{display:grid;place-items:center;width:34px;height:34px;border:1px solid #d4ff6a55;border-radius:50%;color:var(--lime);font:10px var(--mono)}
+.upgrade-timeline h3{font-size:15px;line-height:1.5;margin:12px 0 8px}
+.upgrade-timeline p{color:#a09bad;font-size:10px;line-height:1.85}
+.upgrade-timeline a{display:inline-flex;align-items:center;gap:5px;margin-top:7px;color:var(--lime);font-size:10px}
+.contrast-setting{display:flex;align-items:center;justify-content:space-between;gap:20px;max-width:560px;margin-top:22px;padding:17px 19px;border:1px solid var(--line);border-radius:8px;background:#12111b}
+.contrast-setting strong{font-size:12px}
+.contrast-setting p{font-size:10px;line-height:1.7;color:#a09bad;margin:5px 0 0}
+.contrast-toggle{min-width:62px;padding:9px 13px;border:1px solid #b8b2c9;border-radius:5px;background:#242233;color:#fff;font-size:11px;font-weight:800}
+.contrast-toggle.is-on{background:var(--lime);color:#111!important;border-color:var(--lime)}
+.high-contrast .upgrade-stat small,.high-contrast .upgrade-project-card p,.high-contrast .upgrade-project-top,.high-contrast .upgrade-project-bottom,.high-contrast .roadmap-card-content small,.high-contrast .upgrade-article>p,.high-contrast .upgrade-article-body,.high-contrast .upgrade-milestone p,.high-contrast .upgrade-milestone>small,.high-contrast .upgrade-timeline p,.high-contrast .contrast-setting p,.high-contrast .upgrade-footnote{color:#f0edf8!important}
+.high-contrast .upgrade-stat,.high-contrast .upgrade-project-card,.high-contrast .roadmap-card,.high-contrast .upgrade-article,.high-contrast .upgrade-milestone,.high-contrast .upgrade-timeline article,.high-contrast .contrast-setting{border-color:#aaa2c4}
+.high-contrast a,.high-contrast button{outline-offset:3px}
+.high-contrast :focus-visible{outline:3px solid #fff!important;outline-offset:3px}
+@media(max-width:850px){.upgrade-timeline{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.upgrade-timeline *,.contrast-toggle{transition:none!important}}
