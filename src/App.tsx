@@ -129,6 +129,7 @@ export default function App() {
     { label: 'Project Explorer', detail: 'Search, filter, and sort projects', keywords: 'explorer filter sort project', action: () => document.getElementById('project-explorer')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Learning Roadmap', detail: 'Track learning progress in this browser', keywords: 'roadmap learning progress java dsa', action: () => document.getElementById('learning-roadmap')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Tech Blog & Notes', detail: 'Read expandable development notes', keywords: 'blog articles notes writing', action: () => document.getElementById('tech-notes')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'Project Timeline', detail: 'Explore project learning themes', keywords: 'timeline history milestones', action: () => document.getElementById('project-timeline')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'About Me', detail: 'Read my story', keywords: 'about profile', action: () => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Skills', detail: 'View tools and technologies', keywords: 'skills tech stack', action: () => document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Learning Journey', detail: 'See what I am learning', keywords: 'journey learning dsa', action: () => document.getElementById('journey')?.scrollIntoView({ behavior: 'smooth' }) },
