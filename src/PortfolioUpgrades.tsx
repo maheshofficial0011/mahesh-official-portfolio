@@ -39,10 +39,12 @@ export default function PortfolioUpgrades() {
   const [sortBy, setSortBy] = useState('featured')
   const [category, setCategory] = useState('All')
   const [query, setQuery] = useState('')
-  const [motionStyle, setMotionStyle] = useState('dynamic')
+  const [motionStyle, setMotionStyle] = useState(() => { try { const saved = window.localStorage.getItem('mahesh-motion-style'); return saved === 'subtle' || saved === 'minimal' ? saved : 'dynamic' } catch { return 'dynamic' } })
   const [highContrast, setHighContrast] = useState(false)
+  const [featuredOnly, setFeaturedOnly] = useState(false)
 
   useEffect(() => { try { window.localStorage.setItem('mahesh-roadmap-progress', JSON.stringify(completed)) } catch { /* Session still works without storage. */ } }, [completed])
+  useEffect(() => { try { window.localStorage.setItem('mahesh-motion-style', motionStyle) } catch { /* Animation preference remains available for this session. */ } }, [motionStyle])
   useEffect(() => {
     try {
       const key = 'mahesh-portfolio-local-visits'
@@ -53,11 +55,11 @@ export default function PortfolioUpgrades() {
   }, [])
 
   const visibleProjects = useMemo(() => {
-    const filtered = projects.filter(project => (category === 'All' || project.category === category) && (project.name + ' ' + project.category + ' ' + project.stack + ' ' + project.status).toLowerCase().includes(query.trim().toLowerCase()))
+    const filtered = projects.filter((project, index) => (!featuredOnly || index < 3) && (category === 'All' || project.category === category) && (project.name + ' ' + project.category + ' ' + project.stack + ' ' + project.status).toLowerCase().includes(query.trim().toLowerCase()))
     if (sortBy === 'name') return [...filtered].sort((a, b) => a.name.localeCompare(b.name))
     if (sortBy === 'category') return [...filtered].sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name))
     return filtered
-  }, [category, query, sortBy])
+  }, [category, featuredOnly, query, sortBy])
 
   const downloadResume = () => {
     const lines = [
@@ -110,7 +112,7 @@ export default function PortfolioUpgrades() {
 
     <section className="upgrade-section section-pad" id="project-explorer" aria-labelledby="project-explorer-title">
       <div className="section-heading"><div><span className="section-kicker">08 / PROJECT EXPLORER</span><h2 id="project-explorer-title">Find a <span className="serif-italic">project.</span></h2></div><p>Search, filter, and sort projects. Open a repository to inspect its source.</p></div>
-      <div className="upgrade-project-controls"><label><span className="sr-only">Search projects</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search name, stack, or status…"/></label><label><span className="sr-only">Filter project category</span><select value={category} onChange={event => setCategory(event.target.value)}><option>All</option><option>AI / ML</option><option>Full stack</option><option>Development</option></select></label><label><span className="sr-only">Sort projects</span><select value={sortBy} onChange={event => setSortBy(event.target.value)}><option value="featured">Featured order</option><option value="name">Name A–Z</option><option value="category">Category</option></select></label></div>
+      <div className="upgrade-project-controls"><label><span className="sr-only">Search projects</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search name, stack, or status…"/></label><label><span className="sr-only">Filter project category</span><select value={category} onChange={event => setCategory(event.target.value)}><option>All</option><option>AI / ML</option><option>Full stack</option><option>Development</option></select></label><label><span className="sr-only">Sort projects</span><select value={sortBy} onChange={event => setSortBy(event.target.value)}><option value="featured">Featured order</option><option value="name">Name A–Z</option><option value="category">Category</option></select></label></div>\n      <label className="featured-only-control"><input type="checkbox" checked={featuredOnly} onChange={event => setFeaturedOnly(event.target.checked)}/> Show featured projects only <span>First three portfolio projects</span></label>
       <div className="upgrade-project-grid">{visibleProjects.map((project, index) => <article className="upgrade-project-card" key={project.name}><div className="upgrade-project-top"><span>{String(index + 1).padStart(2, '0')}</span><span>{project.category}</span></div><h3>{project.name}</h3><p>{project.stack}</p><div className="upgrade-project-bottom"><span>{project.status}</span><a href={project.url} target="_blank" rel="noreferrer" aria-label={'Open ' + project.name + ' repository'}>Repository <ArrowUpRight size={14}/></a></div></article>)}</div>
       {visibleProjects.length === 0 && <div className="upgrade-empty">No matching projects. Try another search or category.</div>}
     </section>
