@@ -40,6 +40,7 @@ export default function PortfolioUpgrades() {
   const [category, setCategory] = useState('All')
   const [query, setQuery] = useState('')
   const [motionStyle, setMotionStyle] = useState('dynamic')
+  const [highContrast, setHighContrast] = useState(false)
 
   useEffect(() => { try { window.localStorage.setItem('mahesh-roadmap-progress', JSON.stringify(completed)) } catch { /* Session still works without storage. */ } }, [completed])
   useEffect(() => {
@@ -94,7 +95,7 @@ export default function PortfolioUpgrades() {
     window.setTimeout(() => setCopyState('Copy portfolio link'), 2200)
   }
 
-  return <div className={'portfolio-upgrades motion-' + motionStyle}>
+  return <div className={'portfolio-upgrades motion-' + motionStyle + (highContrast ? ' high-contrast' : '')}>
     <section className="upgrade-section upgrade-dashboard section-pad" id="dashboard" aria-labelledby="dashboard-title">
       <div className="section-heading"><div><span className="section-kicker">07 / DEVELOPER OVERVIEW</span><h2 id="dashboard-title">A workbench for <span className="serif-italic">progress.</span></h2></div><p>A compact snapshot of projects, learning, and public work.</p></div>
       <div className="upgrade-stat-grid">
@@ -121,6 +122,16 @@ export default function PortfolioUpgrades() {
       <p className="upgrade-footnote">Progress is saved in this browser only. It is not shared across devices or presented as a verified certification.</p>
     </section>
 
+    <section className="upgrade-section section-pad" id="project-timeline" aria-labelledby="timeline-title">
+      <div className="section-heading"><div><span className="section-kicker">10 / PROJECT TIMELINE</span><h2 id="timeline-title">The work behind the <span className="serif-italic">work.</span></h2></div><p>A simple project-led timeline, without invented dates or credentials.</p></div>
+      <div className="upgrade-timeline">
+        <article><span className="upgrade-timeline-marker">01</span><div><span className="upgrade-eyebrow">FOUNDATIONS</span><h3>Strengthen Java and DSA</h3><p>Practice core data structures, trace solutions, and learn to reason through edge cases.</p><a href="https://github.com/maheshofficial0011/DSA-JAVA" target="_blank" rel="noreferrer">View DSA-JAVA <ArrowUpRight size={13}/></a></div></article>
+        <article><span className="upgrade-timeline-marker">02</span><div><span className="upgrade-eyebrow">BUILDING</span><h3>Explore full-stack products</h3><p>Work on student learning and support tools with React, TypeScript, backend APIs, and data.</p><a href="https://github.com/maheshofficial0011/skillsaathi-campus-peer-learning" target="_blank" rel="noreferrer">View SkillSaathi <ArrowUpRight size={13}/></a></div></article>
+        <article><span className="upgrade-timeline-marker">03</span><div><span className="upgrade-eyebrow">EXPERIMENTING</span><h3>Apply AI to practical problems</h3><p>Explore computer vision and community-focused ideas while keeping prototype limitations visible.</p><a href="https://github.com/maheshofficial0011/SurakshaDrishti-AI" target="_blank" rel="noreferrer">View SurakshaDrishti AI <ArrowUpRight size={13}/></a></div></article>
+      </div>
+      <p className="upgrade-footnote">This timeline describes themes in the portfolio, not a dated employment or education history.</p>
+    </section>
+
     <section className="upgrade-section section-pad" id="tech-notes" aria-labelledby="notes-title">
       <div className="section-heading"><div><span className="section-kicker">10 / TECH BLOG & NOTES</span><h2 id="notes-title">Notes from the <span className="serif-italic">workbench.</span></h2></div><p>Short expandable notes on learning and building.</p></div>
       <div className="upgrade-article-grid">{articles.map(article => <article className="upgrade-article" key={article.id}><div className="upgrade-article-top"><span><BookOpen size={15}/>{article.category}</span><span>NOTE / {article.id.toUpperCase()}</span></div><h3>{article.title}</h3><p>{article.summary}</p>{expandedArticle === article.id && <div className="upgrade-article-body">{article.body}</div>}<button type="button" onClick={() => setExpandedArticle(current => current === article.id ? null : article.id)}>{expandedArticle === article.id ? 'Close note' : 'Read note'} <ArrowUpRight size={14}/></button></article>)}</div>
@@ -135,7 +146,7 @@ export default function PortfolioUpgrades() {
     <section className="upgrade-section section-pad upgrade-preferences" id="portfolio-preferences" aria-labelledby="preferences-title">
       <div className="section-heading"><div><span className="section-kicker">12 / EXPERIENCE SETTINGS</span><h2 id="preferences-title">Your browsing <span className="serif-italic">style.</span></h2></div><p>Choose how lively the new feature cards feel.</p></div>
       <div className="motion-options" role="group" aria-label="Animation style"><button type="button" className={motionStyle === 'dynamic' ? 'active' : ''} onClick={() => setMotionStyle('dynamic')}>Dynamic</button><button type="button" className={motionStyle === 'subtle' ? 'active' : ''} onClick={() => setMotionStyle('subtle')}>Subtle</button><button type="button" className={motionStyle === 'minimal' ? 'active' : ''} onClick={() => setMotionStyle('minimal')}>Minimal</button></div>
-      <p className="upgrade-footnote">The operating system reduced-motion preference is respected by the existing site styles. This selector adjusts the added feature cards only.</p>
+      <div className="contrast-setting"><div><strong>High contrast</strong><p>Increase text and control contrast in these added sections.</p></div><button type="button" role="switch" aria-checked={highContrast} className={highContrast ? "contrast-toggle is-on" : "contrast-toggle"} onClick={() => setHighContrast(value => !value)}>{highContrast ? "On" : "Off"}</button></div>\n      <p className="upgrade-footnote">The operating system reduced-motion preference is respected by the existing site styles. This selector adjusts the added feature cards only.</p>
     </section>
   </div>
 }
