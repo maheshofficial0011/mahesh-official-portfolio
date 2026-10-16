@@ -12,6 +12,19 @@ const projects: Project[] = [
   { name: 'Helpdesk 360', category: 'Full stack', status: 'Building', number: '06', description: 'A helpdesk project focused on making support requests and issue tracking easier to manage.', stack: ['Web development', 'UI/UX'], url: 'https://github.com/maheshofficial0011/helpdesk-360', color: 'teal', icon: Terminal },
 ]
 const filters = ['All', 'AI / ML', 'Full stack', 'Development']
+type GitHubEvent = { id: string; type: string; repo: { name: string; url: string }; created_at: string; payload: { commits?: { sha: string; message: string }[]; action?: string; ref_type?: string; pull_request?: { title?: string; html_url?: string }; issue?: { title?: string; html_url?: string } } }
+type GitHubUser = { public_repos: number; followers: number; following: number; html_url: string; login: string }
+const githubEventDescription = (event: GitHubEvent) => {
+  if (event.type === 'PushEvent') return { label: 'Pushed commits', detail: event.payload.commits?.length ? `${event.payload.commits.length} commit${event.payload.commits.length === 1 ? '' : 's'}` : 'Repository update' }
+  if (event.type === 'CreateEvent') return { label: `Created ${event.payload.ref_type || 'a resource'}`, detail: 'New repository activity' }
+  if (event.type === 'PullRequestEvent') return { label: `Pull request ${event.payload.action || 'updated'}`, detail: event.payload.pull_request?.title || 'Pull request activity' }
+  if (event.type === 'IssuesEvent') return { label: `Issue ${event.payload.action || 'updated'}`, detail: event.payload.issue?.title || 'Issue activity' }
+  if (event.type === 'WatchEvent') return { label: 'Starred a repository', detail: 'Repository starred' }
+  if (event.type === 'ForkEvent') return { label: 'Forked a repository', detail: 'Repository forked' }
+  if (event.type === 'ReleaseEvent') return { label: 'Published a release', detail: 'Release activity' }
+  if (event.type === 'IssueCommentEvent') return { label: 'Commented on an issue', detail: 'Discussion activity' }
+  return { label: event.type.replace(/Event$/, '').replace(/([a-z])([A-Z])/g, '$1 $2'), detail: 'Public GitHub activity' }
+}
 type TerminalLine = { kind: 'input' | 'output' | 'error'; text: string }
 const skills = [
   { title: 'AI & Computer Vision', items: ['Python', 'YOLOv8', 'OpenCV', 'Machine Learning'], icon: Cpu },
@@ -25,6 +38,11 @@ export default function App() {
   const [theme, setTheme] = useState<'midnight' | 'forest' | 'ocean'>('midnight')
   const [projectQuery, setProjectQuery] = useState('')
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [githubEvents, setGithubEvents] = useState<GitHubEvent[]>([])
+  const [githubUser, setGithubUser] = useState<GitHubUser | null>(null)
+  const [githubLoading, setGithubLoading] = useState(true)
+  const [githubError, setGithubError] = useState('')
+  const [githubRefreshKey, setGithubRefreshKey] = useState(0)
   const [gameActive, setGameActive] = useState(false)
   const [gameScore, setGameScore] = useState(0)
   const [timeLeft, setTimeLeft] = useState(15)
@@ -36,6 +54,32 @@ export default function App() {
   const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([{ kind: 'output', text: 'Welcome to Mahesh.OS — a portfolio terminal, not a real system shell.' }, { kind: 'output', text: 'Type help to see the available commands.' }])
   const terminalInputRef = useRef<HTMLInputElement>(null)
   const terminalOutputRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const controller = new AbortController()
+    const loadGitHubActivity = async () => {
+      setGithubLoading(true)
+      setGithubError('')
+      try {
+        const headers = { Accept: 'application/vnd.github+json' }
+        const [userResponse, eventsResponse] = await Promise.all([
+          fetch('https://api.github.com/users/maheshofficial0011', { headers, signal: controller.signal }),
+          fetch('https://api.github.com/users/maheshofficial0011/events/public?per_page=8', { headers, signal: controller.signal }),
+        ])
+        if (!userResponse.ok || !eventsResponse.ok) throw new Error(userResponse.status === 403 || eventsResponse.status === 403 ? 'GitHub API rate limit reached. Please try again later.' : 'GitHub activity is temporarily unavailable.')
+        const [userData, eventData] = await Promise.all([userResponse.json(), eventsResponse.json()])
+        if (!Array.isArray(eventData)) throw new Error('GitHub returned an unexpected activity response.')
+        setGithubUser(userData as GitHubUser)
+        setGithubEvents(eventData as GitHubEvent[])
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') return
+        setGithubError(error instanceof Error ? error.message : 'Could not load GitHub activity.')
+      } finally {
+        if (!controller.signal.aborted) setGithubLoading(false)
+      }
+    }
+    void loadGitHubActivity()
+    return () => controller.abort()
+  }, [githubRefreshKey])
   useEffect(() => {
     if (!gameActive) return
     if (timeLeft <= 0) { setGameActive(false); return }
@@ -61,6 +105,7 @@ export default function App() {
     { label: 'About Me', detail: 'Read my story', keywords: 'about profile', action: () => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Skills', detail: 'View tools and technologies', keywords: 'skills tech stack', action: () => document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Learning Journey', detail: 'See what I am learning', keywords: 'journey learning dsa', action: () => document.getElementById('journey')?.scrollIntoView({ behavior: 'smooth' }) },
+    { label: 'GitHub Activity', detail: 'View recent public GitHub events', keywords: 'github activity commits repositories open source', action: () => document.getElementById('github-activity')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Open Terminal', detail: 'Try interactive portfolio commands', keywords: 'terminal command shell', action: () => document.getElementById('terminal')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Reaction Challenge', detail: 'Play the 15-second mini game', keywords: 'game challenge play reaction', action: () => document.getElementById('challenge')?.scrollIntoView({ behavior: 'smooth' }) },
     { label: 'Contact Me', detail: 'Find email and WhatsApp links', keywords: 'contact email whatsapp message', action: () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }) },
@@ -121,7 +166,7 @@ export default function App() {
     </div>}
     <header className="nav-wrap"><a className="brand" href="#home" onClick={closeMenu}><span className="brand-mark">M<span>.</span></span><span>MAHESH <em>OFFICIAL</em></span></a>
       <button className="menu-toggle" aria-label="Toggle navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
-      <div className="nav-right"><div className="theme-switcher" role="group" aria-label="Choose visual theme"><button className={theme==='midnight'?'theme-option active':'theme-option'} onClick={()=>setTheme('midnight')} aria-label="Midnight theme" title="Midnight"><Moon size={14}/></button><button className={theme==='forest'?'theme-option active':'theme-option'} onClick={()=>setTheme('forest')} aria-label="Forest theme" title="Forest"><Leaf size={14}/></button><button className={theme==='ocean'?'theme-option active':'theme-option'} onClick={()=>setTheme('ocean')} aria-label="Ocean theme" title="Ocean"><Waves size={14}/></button></div><nav className={menuOpen ? 'nav-links open' : 'nav-links'}><a href="#work" onClick={closeMenu}>Work <span>↘</span></a><a href="#about" onClick={closeMenu}>About</a><a href="#skills" onClick={closeMenu}>Skills</a><a href="#journey" onClick={closeMenu}>Journey</a><a href="#terminal" onClick={closeMenu}>Terminal</a><a href="#challenge" onClick={closeMenu}>Challenge</a><a className="nav-contact" href="#contact" onClick={closeMenu}>Let's talk <ArrowUpRight size={15}/></a></nav></div>
+      <div className="nav-right"><div className="theme-switcher" role="group" aria-label="Choose visual theme"><button className={theme==='midnight'?'theme-option active':'theme-option'} onClick={()=>setTheme('midnight')} aria-label="Midnight theme" title="Midnight"><Moon size={14}/></button><button className={theme==='forest'?'theme-option active':'theme-option'} onClick={()=>setTheme('forest')} aria-label="Forest theme" title="Forest"><Leaf size={14}/></button><button className={theme==='ocean'?'theme-option active':'theme-option'} onClick={()=>setTheme('ocean')} aria-label="Ocean theme" title="Ocean"><Waves size={14}/></button></div><nav className={menuOpen ? 'nav-links open' : 'nav-links'}><a href="#work" onClick={closeMenu}>Work <span>↘</span></a><a href="#about" onClick={closeMenu}>About</a><a href="#skills" onClick={closeMenu}>Skills</a><a href="#journey" onClick={closeMenu}>Journey</a><a href="#github-activity" onClick={closeMenu}>GitHub</a><a href="#terminal" onClick={closeMenu}>Terminal</a><a href="#challenge" onClick={closeMenu}>Challenge</a><a className="nav-contact" href="#contact" onClick={closeMenu}>Let's talk <ArrowUpRight size={15}/></a></nav></div>
     </header>
     <main>
       <section className="hero section-pad" id="home">
@@ -148,6 +193,22 @@ export default function App() {
       <section className="about-section section-pad" id="about"><div className="about-left"><span className="section-kicker">02 / A LITTLE ABOUT ME</span><h2>Curiosity is<br/>my <span className="serif-italic">default setting.</span></h2><div className="about-stamp"><span>STAY</span><strong>CURIOUS</strong><span>KEEP BUILDING ↗</span></div></div><div className="about-copy"><div className="big-quote">“</div><p className="about-lead">I learn best when an idea becomes a working thing — even if the first version is rough.</p><p>My path so far has been hands-on rather than perfectly linear. I've explored computer vision, multilingual learning tools, peer-to-peer student learning, and full-stack apps. Each project has forced me to get past the exciting idea and deal with the practical parts: structure, edge cases, interfaces, data, and the bugs that only show up when something actually runs.</p><p>I'm still figuring out which problems I want to spend years solving. For now, I'm strengthening my fundamentals in Java and data structures while exploring AI/ML, backend development, and automation. I don't consider every experiment a finished product; I want this site to show what I'm learning, what I'm building, and what still needs work.</p><div className="about-signoff"><span className="signature">Mahesh.</span><span>LEARN LOUDLY. BUILD THOUGHTFULLY.</span></div></div></section>
       <section className="skills-section section-pad" id="skills"><div className="section-heading"><div><span className="section-kicker">03 / MY TOOLKIT</span><h2>Tools of the <span className="serif-italic">trade.</span></h2></div><p>Technologies I use, explore, and<br/>keep getting better at.</p></div><div className="skills-grid">{skills.map((s,i)=>{const Icon=s.icon;return <motion.div className="skill-card" key={s.title} initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{delay:i*.08}}><div className="skill-card-top"><span className="skill-icon"><Icon size={19}/></span><span className="skill-num">0{i+1}</span></div><h3>{s.title}</h3><div className="skill-pills">{s.items.map(item=><span key={item}>{item}</span>)}</div><div className="skill-card-line"/></motion.div>})}</div><p className="skills-note"><span className="status-dot"/> This is an evolving toolkit, not a claim of mastery in every technology.</p></section>
       <section className="journey-section section-pad" id="journey"><div className="journey-intro"><span className="section-kicker">04 / THE PROCESS</span><h2>Progress over<br/><span className="serif-italic">perfection.</span></h2><p>I don't have a perfect roadmap. This is the repeatable loop that helps me make progress without pretending I know everything already.</p></div><div className="journey-steps"><div className="journey-step"><span className="step-count">01</span><div><h3>Explore</h3><p>Start with the people and the problem, not the framework. Read, ask questions, and understand what a useful result would look like.</p></div><span className="step-symbol">⌕</span></div><div className="journey-step"><span className="step-count">02</span><div><h3>Experiment</h3><p>Make the smallest version that can teach me something. Run it, test the awkward cases, and keep notes on what fails.</p></div><span className="step-symbol">⤢</span></div><div className="journey-step"><span className="step-count">03</span><div><h3>Improve</h3><p>Fix the rough edges, explain the decisions, and be honest about what is complete versus what is still a prototype.</p></div><span className="step-symbol">↗</span></div></div></section>
+
+      <section className="github-activity-section section-pad" id="github-activity" aria-labelledby="github-activity-title">
+        <div className="section-heading"><div><span className="section-kicker">05 / LIVE FROM GITHUB</span><h2 id="github-activity-title">Building in <span className="serif-italic">public.</span></h2></div><p>Recent public activity fetched directly from GitHub.<br/>Updates when this section loads.</p></div>
+        <div className="github-profile-strip">
+          <div className="github-profile-mark"><Github size={25}/></div>
+          <div className="github-profile-copy"><strong>@maheshofficial0011</strong><span>{githubLoading ? 'Fetching public profile…' : githubError ? 'Live profile temporarily unavailable' : 'Live public GitHub profile'}</span></div>
+          {githubUser && <div className="github-profile-stats"><span><strong>{githubUser.public_repos}</strong><small>repositories</small></span><span><strong>{githubUser.followers}</strong><small>followers</small></span><span><strong>{githubUser.following}</strong><small>following</small></span></div>}
+          <a className="github-profile-link" href="https://github.com/maheshofficial0011" target="_blank" rel="noreferrer">PROFILE <ArrowUpRight size={14}/></a>
+        </div>
+        {githubLoading && <div className="github-activity-state" role="status"><span className="github-loading-dot"/>Loading recent public activity from GitHub…</div>}
+        {!githubLoading && githubError && <div className="github-activity-state github-activity-error" role="alert"><strong>Couldn’t load live activity</strong><p>{githubError} This section uses GitHub’s public API and does not contain invented sample events.</p><button className="btn btn-quiet" type="button" onClick={() => setGithubRefreshKey(key => key + 1)}><RotateCcw size={14}/> Try again</button></div>}
+        {!githubLoading && !githubError && githubEvents.length === 0 && <div className="github-activity-state">No recent public events were returned. Check the profile for repositories and other activity.</div>}
+        {!githubLoading && !githubError && githubEvents.length > 0 && <div className="github-activity-list">{githubEvents.map(event => { const description = githubEventDescription(event); return <article className="github-activity-item" key={event.id}><span className="github-event-marker"><Github size={15}/></span><div className="github-event-main"><div className="github-event-heading"><strong>{description.label}</strong><time dateTime={event.created_at}>{new Date(event.created_at).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</time></div><p>{description.detail}</p><a href={`https://github.com/${event.repo.name}`} target="_blank" rel="noreferrer">{event.repo.name}<ArrowUpRight size={13}/></a></div></article> })}</div>}
+        <div className="github-activity-footer"><span><i/> PUBLIC EVENTS ONLY · GITHUB API</span><button type="button" onClick={() => setGithubRefreshKey(key => key + 1)} disabled={githubLoading}><RotateCcw size={13}/> Refresh activity</button></div>
+        <p className="github-activity-disclaimer">GitHub’s public events feed may be delayed and only includes recent public activity. It does not represent private contributions or a complete lifetime contribution count. <a href="https://docs.github.com/en/rest/activity/events" target="_blank" rel="noreferrer">API details <ArrowUpRight size={11}/></a></p>
+      </section>
 
       <section className="terminal-section section-pad" id="terminal" aria-labelledby="terminal-title">
         <div className="terminal-intro"><span className="section-kicker">05 / INTERACTIVE SYSTEM</span><h2 id="terminal-title">Meet me at the<br/><span className="serif-italic">command line.</span></h2><p>Explore my work through a little terminal. These commands are a safe, simulated interface — they do not execute system commands.</p><div className="terminal-hint"><span>TRY</span><button type="button" onClick={() => { setTerminalInput("help"); terminalInputRef.current?.focus() }}>help</button><button type="button" onClick={() => { setTerminalInput("projects"); terminalInputRef.current?.focus() }}>projects</button><button type="button" onClick={() => runTerminalCommand("theme ocean")}>theme ocean</button></div></div>
