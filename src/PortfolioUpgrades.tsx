@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowDownToLine, ArrowUpRight, BookOpen, CheckCircle2, Code2, Copy, ExternalLink, FileText, Github, GraduationCap, Layers3, Map, Sparkles, Trophy } from 'lucide-react'
+import { ArrowDownToLine, ArrowUpRight, BookOpen, CheckCircle2, Code2, Copy, ExternalLink, FileText, Github, GraduationCap, Layers3, Map, Sparkles, Trophy, Youtube, Instagram, Facebook, MessageCircle, Linkedin, Gamepad2, RotateCcw, Circle, X as XIcon } from 'lucide-react'
 import './portfolio-upgrades.css'
 
 const projects = [
@@ -22,7 +22,7 @@ const articles = [
   { id: 'edges', category: 'Problem solving', title: 'Why edge cases make better programmers', summary: 'Small tests reveal assumptions hidden in a solution.', body: 'Start with normal input, then consider empty input, one item, duplicates, boundaries, and invalid positions. Write down what you expect before running the code; the difference is where learning happens.' },
   { id: 'ai', category: 'AI / ML', title: 'Building AI around a real problem', summary: 'Begin with the user and workflow, not just the model.', body: 'Describe who needs help, what task is difficult, and how success would be measured. Then choose the simplest tool that can test the idea, and be explicit about its limitations.' },
 ]
-function safeRead(key: string): string[] {
+function AtSignIcon() { return <span aria-hidden="true" style={{fontSize:20,fontWeight:800,lineHeight:1}}>@</span> }\nfunction safeRead(key: string): string[] {
   try {
     const value = window.localStorage.getItem(key)
     const parsed = value ? JSON.parse(value) : []
@@ -42,6 +42,16 @@ export default function PortfolioUpgrades() {
   const [motionStyle, setMotionStyle] = useState(() => { try { const saved = window.localStorage.getItem('mahesh-motion-style'); return saved === 'subtle' || saved === 'minimal' ? saved : 'dynamic' } catch { return 'dynamic' } })
   const [highContrast, setHighContrast] = useState(false)
   const [featuredOnly, setFeaturedOnly] = useState(false)
+  const [activeGame, setActiveGame] = useState('memory')
+  const [memoryCards, setMemoryCards] = useState<number[]>([])
+  const [matchedCards, setMatchedCards] = useState<number[]>([])
+  const [guess, setGuess] = useState('')
+  const [guessMessage, setGuessMessage] = useState('Pick a number from 1 to 20.')
+  const [secretNumber, setSecretNumber] = useState(() => Math.floor(Math.random() * 20) + 1)
+  const [ticCells, setTicCells] = useState<string[]>(Array(9).fill(''))
+  const [ticTurn, setTicTurn] = useState('X')
+  const [ticMessage, setTicMessage] = useState('Your turn: X')
+  const [reactionCount, setReactionCount] = useState(0)
 
   useEffect(() => { try { window.localStorage.setItem('mahesh-roadmap-progress', JSON.stringify(completed)) } catch { /* Session still works without storage. */ } }, [completed])
   useEffect(() => { try { window.localStorage.setItem('mahesh-motion-style', motionStyle) } catch { /* Animation preference remains available for this session. */ } }, [motionStyle])
@@ -138,6 +148,30 @@ export default function PortfolioUpgrades() {
       <div className="section-heading"><div><span className="section-kicker">10 / TECH BLOG & NOTES</span><h2 id="notes-title">Notes from the <span className="serif-italic">workbench.</span></h2></div><p>Short expandable notes on learning and building.</p></div>
       <div className="upgrade-article-grid">{articles.map(article => <article className="upgrade-article" key={article.id}><div className="upgrade-article-top"><span><BookOpen size={15}/>{article.category}</span><span>NOTE / {article.id.toUpperCase()}</span></div><h3>{article.title}</h3><p>{article.summary}</p>{expandedArticle === article.id && <div className="upgrade-article-body">{article.body}</div>}<button type="button" onClick={() => setExpandedArticle(current => current === article.id ? null : article.id)}>{expandedArticle === article.id ? 'Close note' : 'Read note'} <ArrowUpRight size={14}/></button></article>)}</div>
       <p className="upgrade-footnote">These are starter notes. Add new articles in the articles list inside the PortfolioUpgrades component.</p>
+    </section>
+
+    <section className="upgrade-section section-pad" id="game-arcade" aria-labelledby="arcade-title">
+      <div className="section-heading"><div><span className="section-kicker">11 / THE ARCADE</span><h2 id="arcade-title">Take a break. <span className="serif-italic">Play.</span></h2></div><p>Three quick games you can play right here. Scores stay in this page session.</p></div>
+      <div className="arcade-tabs" role="group" aria-label="Choose a game"><button className={activeGame==='memory'?'active':''} onClick={()=>setActiveGame('memory')} type="button"><Sparkles size={15}/> Memory Match</button><button className={activeGame==='guess'?'active':''} onClick={()=>setActiveGame('guess')} type="button"><Target size={15}/> Number Guess</button><button className={activeGame==='tic'?'active':''} onClick={()=>setActiveGame('tic')} type="button"><Gamepad2 size={15}/> Tic-Tac-Toe</button><button className={activeGame==='reaction'?'active':''} onClick={()=>setActiveGame('reaction')} type="button"><RotateCcw size={15}/> Reaction Score</button></div>
+      {activeGame==='memory' && <div className="arcade-game"><div className="arcade-game-heading"><div><span className="upgrade-eyebrow">MEMORY MATCH</span><h3>Find the pairs</h3><p>Match the same symbols. Flip two cards at a time.</p></div><span className="arcade-score">{matchedCards.length/2} / 6 pairs</span></div><div className="memory-grid">{['✦','●','▲','◆','☾','✿','✿','☾','◆','▲','●','✦'].map((symbol,index)=><button type="button" key={index} className={'memory-card'+(memoryCards.includes(index)||matchedCards.includes(index)?' revealed':'')+(matchedCards.includes(index)?' matched':'')} onClick={()=>setMemoryCards(current=>{if(current.length>=2||current.includes(index)||matchedCards.includes(index))return current;const next=[...current,index];if(next.length===2&&['✦','●','▲','◆','☾','✿'][index]===['✦','●','▲','◆','☾','✿'][current[0]])setMatchedCards(old=>[...old,current[0],index]);return next})}>{memoryCards.includes(index)||matchedCards.includes(index)?symbol:'?'}</button>)}</div><button type="button" className="btn btn-quiet" onClick={()=>{setMemoryCards([]);setMatchedCards([])}}><RotateCcw size={14}/> Restart memory game</button></div>}
+      {activeGame==='guess' && <div className="arcade-game"><span className="upgrade-eyebrow">NUMBER GUESS</span><h3>Can you find the number?</h3><p>Guess a whole number from 1 to 20.</p><form className="guess-form" onSubmit={event=>{event.preventDefault();const n=Number(guess);if(!Number.isInteger(n)||n<1||n>20){setGuessMessage('Enter a whole number from 1 to 20.');return}setGuessMessage(n===secretNumber?'Correct! You got it. Start a new round to play again.':n<secretNumber?'Too low — try a higher number.':'Too high — try a lower number.')}}><label className="sr-only" htmlFor="arcade-guess">Your guess</label><input id="arcade-guess" type="number" min="1" max="20" value={guess} onChange={event=>setGuess(event.target.value)} placeholder="1–20"/><button className="btn btn-primary" type="submit">Check guess</button></form><p className="guess-message" aria-live="polite">{guessMessage}</p><button type="button" className="btn btn-quiet" onClick={()=>{setSecretNumber(Math.floor(Math.random()*20)+1);setGuess('');setGuessMessage('New number selected. Guess from 1 to 20.')}}><RotateCcw size={14}/> New number</button></div>}
+      {activeGame==='tic' && <div className="arcade-game"><div className="arcade-game-heading"><div><span className="upgrade-eyebrow">TIC-TAC-TOE</span><h3>Classic 3 × 3</h3><p>Two-player mode on the same device.</p></div><span className="arcade-score">{ticMessage}</span></div><div className="tic-grid">{ticCells.map((cell,index)=><button type="button" key={index} className="tic-cell" aria-label={'Cell '+(index+1)+(cell?', '+cell:' empty')} disabled={!!cell||ticMessage.includes('wins')||ticMessage.includes('draw')} onClick={()=>{const next=[...ticCells];next[index]=ticTurn;setTicCells(next);const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];if(wins.some(line=>line.every(i=>next[i]===ticTurn)))setTicMessage(ticTurn+' wins!');else if(next.every(Boolean))setTicMessage('It is a draw.');else{setTicTurn(ticTurn==='X'?'O':'X');setTicMessage('Your turn: '+(ticTurn==='X'?'O':'X'))}}}>{cell==='X'?<XIcon size={24}/>:cell==='O'?<Circle size={22}/>:''}</button>)}</div><button type="button" className="btn btn-quiet" onClick={()=>{setTicCells(Array(9).fill(''));setTicTurn('X');setTicMessage('Your turn: X')}}><RotateCcw size={14}/> Restart match</button></div>}
+      {activeGame==='reaction' && <div className="arcade-game"><span className="upgrade-eyebrow">REACTION SCORE</span><h3>Tap the target</h3><p>Click the target as many times as you can. Score: <strong>{reactionCount}</strong></p><button type="button" className="reaction-arcade-target" onClick={()=>setReactionCount(score=>score+1)}><Target size={27}/> CLICK TO SCORE</button><button type="button" className="btn btn-quiet" onClick={()=>setReactionCount(0)}><RotateCcw size={14}/> Reset score</button></div>}
+    </section>
+
+    <section className="upgrade-section section-pad" id="social-hub" aria-labelledby="social-hub-title">
+      <div className="section-heading"><div><span className="section-kicker">12 / SOCIAL ECOSYSTEM</span><h2 id="social-hub-title">Find me across the <span className="serif-italic">internet.</span></h2></div><p>A single place for social channels, direct contact, project updates, and community.</p></div>
+      <div className="social-hub-grid">
+        <a className="social-hub-card" href="https://www.youtube.com/" target="_blank" rel="noreferrer"><span className="social-hub-icon youtube"><Youtube size={21}/></span><span><strong>YouTube</strong><small>Videos and project demos</small></span><ArrowUpRight size={15}/></a>
+        <a className="social-hub-card" href="https://www.facebook.com/" target="_blank" rel="noreferrer"><span className="social-hub-icon facebook"><Facebook size={21}/></span><span><strong>Facebook</strong><small>Community and updates</small></span><ArrowUpRight size={15}/></a>
+        <a className="social-hub-card" href="https://x.com/" target="_blank" rel="noreferrer"><span className="social-hub-icon x-social"><XIcon size={20}/></span><span><strong>X / Twitter</strong><small>Short updates and ideas</small></span><ArrowUpRight size={15}/></a>
+        <a className="social-hub-card" href="https://www.instagram.com/" target="_blank" rel="noreferrer"><span className="social-hub-icon instagram"><Instagram size={21}/></span><span><strong>Instagram</strong><small>Visual stories and reels</small></span><ArrowUpRight size={15}/></a>
+        <a className="social-hub-card" href="https://www.threads.net/" target="_blank" rel="noreferrer"><span className="social-hub-icon threads"><AtSignIcon/></span><span><strong>Threads</strong><small>Conversations and thoughts</small></span><ArrowUpRight size={15}/></a>
+        <a className="social-hub-card" href="https://wa.me/9779806434625" target="_blank" rel="noreferrer"><span className="social-hub-icon whatsapp"><MessageCircle size={21}/></span><span><strong>WhatsApp</strong><small>Message directly</small></span><ArrowUpRight size={15}/></a>
+        <a className="social-hub-card" href="https://www.linkedin.com/search/results/people/?keywords=Mahesh%20%28Manav%29%20Rana" target="_blank" rel="noreferrer"><span className="social-hub-icon linkedin"><Linkedin size={21}/></span><span><strong>LinkedIn</strong><small>Find Mahesh (Manav) Rana</small></span><ArrowUpRight size={15}/></a>
+        <a className="social-hub-card" href="https://github.com/maheshofficial0011" target="_blank" rel="noreferrer"><span className="social-hub-icon github"><Github size={21}/></span><span><strong>GitHub</strong><small>Code and open-source projects</small></span><ArrowUpRight size={15}/></a>
+      </div>
+      <p className="upgrade-footnote">YouTube, Facebook, X, Instagram, and Threads currently open their official platforms. Add your confirmed profile URLs when ready so visitors can reach your exact accounts.</p>
     </section>
 
     <section className="upgrade-section section-pad" id="milestones" aria-labelledby="milestones-title">
