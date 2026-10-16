@@ -204,6 +204,7 @@ export default function App() {
           const tokens = expression.match(/\d+(?:\.\d+)?|[()+\-*/%]/g) || []
           if (tokens.join('') !== expression) throw new Error('Invalid characters')
           let index = 0
+          let parseExpression: () => number
           const parseFactor = (): number => {
             const token = tokens[index++]
             if (token === '+') return parseFactor()
@@ -214,7 +215,7 @@ export default function App() {
             return value
           }
           const parseTerm = (): number => { let value = parseFactor(); while (['*','/','%'].includes(tokens[index])) { const op = tokens[index++]; const right = parseFactor(); if ((op === '/' || op === '%') && right === 0) throw new Error('Division by zero'); value = op === '*' ? value * right : op === '/' ? value / right : value % right } return value }
-          const parseExpression = (): number => { let value = parseTerm(); while (tokens[index] === '+' || tokens[index] === '-') { const op = tokens[index++]; const right = parseTerm(); value = op === '+' ? value + right : value - right } return value }
+          parseExpression = (): number => { let value = parseTerm(); while (tokens[index] === '+' || tokens[index] === '-') { const op = tokens[index++]; const right = parseTerm(); value = op === '+' ? value + right : value - right } return value }
           const result = parseExpression()
           if (index !== tokens.length || !Number.isFinite(result)) throw new Error('Invalid expression')
           output(expression + ' = ' + result)
@@ -300,11 +301,11 @@ export default function App() {
       </section>
 
       <section className="terminal-section section-pad" id="terminal" aria-labelledby="terminal-title">
-        <div className="terminal-intro"><span className="section-kicker">05 / INTERACTIVE SYSTEM</span><h2 id="terminal-title">Meet me at the<br/><span className="serif-italic">command line.</span></h2><p>Explore my work through a little terminal. These commands are a safe, simulated interface — they do not execute system commands.</p><div className="terminal-hint"><span>TRY</span><button type="button" onClick={() => { setTerminalInput("help"); terminalInputRef.current?.focus() }}>help</button><button type="button" onClick={() => { setTerminalInput("projects"); terminalInputRef.current?.focus() }}>projects</button><button type="button" onClick={() => runTerminalCommand("theme ocean")}>theme ocean</button></div></div>
+        <div className="terminal-intro"><span className="section-kicker">05 / INTERACTIVE SYSTEM</span><h2 id="terminal-title">Meet me at the<br/><span className="serif-italic">command line.</span></h2><p>Explore my work through a little terminal. These commands are a safe, simulated interface — they do not execute system commands.</p><div className="terminal-hint"><span>TRY</span><button type="button" onClick={() => { setTerminalInput("help"); terminalInputRef.current?.focus() }}>help</button><button type="button" onClick={() => { setTerminalInput("projects"); terminalInputRef.current?.focus() }}>projects</button><button type="button" onClick={() => runTerminalCommand("theme ocean")}>theme ocean</button><button type="button" onClick={() => runTerminalCommand("stats")}>stats</button><button type="button" onClick={() => runTerminalCommand("calc 12*(3+4)")}>calc demo</button><button type="button" onClick={() => runTerminalCommand("quote")}>quote</button></div></div>
         <div className="terminal-window" onClick={() => terminalInputRef.current?.focus()}>
           <div className="terminal-titlebar"><div className="terminal-lights" aria-hidden="true"><i/><i/><i/></div><span><Terminal size={14}/> mahesh@portfolio:~</span><span className="terminal-live"><i/> ONLINE</span></div>
           <div className="terminal-screen" ref={terminalOutputRef} role="log" aria-live="polite" aria-label="Terminal output">
-            <div className="terminal-banner" aria-hidden="true">MAHESH<span>.OS</span><small>PERSONAL PORTFOLIO INTERFACE / v1.0</small></div>
+            <div className="terminal-banner" aria-hidden="true">MAHESH<span>.OS</span><small>PERSONAL PORTFOLIO INTERFACE / v2.0 · SAFE SIMULATION</small></div>
             {terminalLines.map((line, index) => <div className={"terminal-line terminal-" + line.kind} key={index}><span className="terminal-prompt" aria-hidden="true">{line.kind === "input" ? "›" : line.kind === "error" ? "!" : "•"}</span><pre>{line.text}</pre></div>)}
           </div>
           <form className="terminal-command" onSubmit={event => { event.preventDefault(); runTerminalCommand(terminalInput); setTerminalInput("") }}>
