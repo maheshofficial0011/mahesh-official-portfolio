@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowDownToLine, ArrowUpRight, BookOpen, CheckCircle2, Code2, Copy, ExternalLink, FileText, Github, GraduationCap, Layers3, Map, Sparkles, Trophy, Youtube, Instagram, Facebook, MessageCircle, Linkedin, Gamepad2, RotateCcw, Circle, X as XIcon } from 'lucide-react'
+import { ArrowDownToLine, ArrowUpRight, BookOpen, CheckCircle2, Code2, Copy, ExternalLink, FileText, Github, GraduationCap, Layers3, Map, Sparkles, Trophy, Target, Youtube, Instagram, Facebook, MessageCircle, Linkedin, Gamepad2, RotateCcw, Circle, X as XIcon } from 'lucide-react'
 import './portfolio-upgrades.css'
 
 const projects = [
@@ -17,12 +17,14 @@ const tracks = [
   { id: 'cyber', title: 'Cybersecurity Fundamentals', detail: 'Learn networking, secure coding, and defensive security principles.', tag: 'Security' },
   { id: 'web', title: 'Web Development', detail: 'Build accessible interfaces and reliable full-stack applications.', tag: 'Web' },
 ]
-const memorySymbols = ['✦','●','▲','◆','☾','✿','✿','☾','◆','▲','●','✦']\nconst articles = [
+const memorySymbols = ['✦','●','▲','◆','☾','✿','✿','☾','◆','▲','●','✦']
+const articles = [
   { id: 'learning', category: 'Reflection', title: 'Learning in public without pretending to know everything', summary: 'Show work in progress honestly.', body: 'Keep project status clear, explain what is working, and label prototypes as prototypes. A useful portfolio can show decisions, questions, and next steps—not only finished outcomes.' },
   { id: 'edges', category: 'Problem solving', title: 'Why edge cases make better programmers', summary: 'Small tests reveal assumptions hidden in a solution.', body: 'Start with normal input, then consider empty input, one item, duplicates, boundaries, and invalid positions. Write down what you expect before running the code; the difference is where learning happens.' },
   { id: 'ai', category: 'AI / ML', title: 'Building AI around a real problem', summary: 'Begin with the user and workflow, not just the model.', body: 'Describe who needs help, what task is difficult, and how success would be measured. Then choose the simplest tool that can test the idea, and be explicit about its limitations.' },
 ]
-function AtSignIcon() { return <span aria-hidden="true" style={{fontSize:20,fontWeight:800,lineHeight:1}}>@</span> }\nfunction safeRead(key: string): string[] {
+function AtSignIcon() { return <span aria-hidden="true" style={{fontSize:20,fontWeight:800,lineHeight:1}}>@</span> }
+function safeRead(key: string): string[] {
   try {
     const value = window.localStorage.getItem(key)
     const parsed = value ? JSON.parse(value) : []
