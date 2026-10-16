@@ -2,3 +2,16 @@
 
 /* WhatsApp contact CTA */
 .btn-whatsapp{background:#25d366;color:#071b10;border:1px solid #25d366}.btn-whatsapp:hover{background:#43e17b;border-color:#43e17b}.whatsapp-contact-card{display:flex;align-items:center;gap:14px;max-width:420px;margin-top:22px;padding:17px 18px;border:1px solid #25d36640;border-radius:7px;background:linear-gradient(110deg,#25d36612,rgba(18,18,28,.7));transition:border-color .2s,transform .2s}.whatsapp-contact-card:hover{border-color:#25d366a0;transform:translateY(-2px)}.whatsapp-card-icon{width:43px;height:43px;display:grid;place-items:center;flex:0 0 43px;border-radius:12px;background:#25d3661c;color:#43e17b}.whatsapp-card-copy{display:flex;flex-direction:column;gap:5px;min-width:0}.whatsapp-card-copy strong{font-size:12px;color:#f3f1f8}.whatsapp-card-copy small{font-size:10px;color:#a19bad}.whatsapp-card-arrow{margin-left:auto;flex:0 0 auto;color:#43e17b}@media(max-width:430px){.whatsapp-contact-card{padding:14px;gap:11px}.whatsapp-card-copy small{font-size:9px}}
+
+/* Portfolio contact form */
+.contact-form{position:relative;max-width:760px;margin-top:38px;padding:clamp(20px,4vw,32px);border:1px solid #ffffff18;border-radius:12px;background:linear-gradient(145deg,#171622e8,#111019e8);box-shadow:0 24px 70px #0003;backdrop-filter:blur(14px)}
+.contact-form-heading{margin-bottom:23px}.contact-form-heading p{margin:9px 0 0;color:#a19bad;font-size:12px;line-height:1.7}
+.contact-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.contact-form label{display:flex;flex-direction:column;gap:8px;color:#d0cbd9;font-size:11px;font-weight:600}
+.contact-form input,.contact-form textarea{width:100%;border:1px solid #ffffff1c;border-radius:6px;background:#0e0d15;color:#f3f1f8;padding:13px 14px;font:12px 'Manrope',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s;resize:vertical}
+.contact-form input::placeholder,.contact-form textarea::placeholder{color:#716b81}
+.contact-form input:focus,.contact-form textarea:focus{border-color:#d4ff6a9c;box-shadow:0 0 0 3px #d4ff6a12}
+.contact-form-full{grid-column:1/-1}
+.contact-submit{margin-top:20px;border:0}
+.contact-form-note{margin:15px 0 0;color:#777287;font-size:10px;line-height:1.7}
+@media(max-width:560px){.contact-form-grid{grid-template-columns:1fr;gap:15px}.contact-form-full{grid-column:auto}.contact-form{padding:19px}}
